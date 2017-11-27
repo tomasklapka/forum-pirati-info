@@ -31,7 +31,7 @@ function forumRoute(view, req, res) {
                 data.type = t
             }
         }
-        let properties = [ '$', 'request', 'defaultRequest', 'httpRequestCache', 'links' ];
+        let properties = [ '$', 'request', 'defaultRequest', 'httpRequestCache' ];
         properties.forEach((prop) => {
             delete data[prop];
         });
