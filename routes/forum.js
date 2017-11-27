@@ -31,7 +31,7 @@ function forumRoute(view, req, res) {
                 data.type = t
             }
         }
-        let properties = [ '$', 'request', 'defaultRequest', 'httpRequestCache' ];
+        let properties = [ '$', 'request', 'defaultRequest', 'httpRequestCache', 'links' ];
         properties.forEach((prop) => {
             delete data[prop];
         });
@@ -40,11 +40,8 @@ function forumRoute(view, req, res) {
         }
         const r = {};
         r['owl:sameAs'] = originUrl;
-        r['path'] = req.route.path;
         r['params'] = req.params;
-        r['route'] = req.route;
         data['_debug'] = r;
-        debug(req.route.path);
         debug(req.params);
         res.json(data);
     }).catch((err) => {
@@ -53,6 +50,7 @@ function forumRoute(view, req, res) {
 }
 
 module.exports.index = (req, res) => { forumRoute('index', req, res); };
+module.exports.searchPosts = (req, res) => { forumRoute('searchPosts', req, res); };
 module.exports.unreadPosts = (req, res) => { forumRoute('unreadPosts', req, res); };
 module.exports.newPosts = (req, res) => { forumRoute('newPosts', req, res); };
 module.exports.activeTopics = (req, res) => { forumRoute('activeTopics', req, res); };
