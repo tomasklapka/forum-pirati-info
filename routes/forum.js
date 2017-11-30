@@ -1,13 +1,12 @@
 "use strict";
 
 const debug = require('debug')('routes/forum');
-const request = require('request');
 const { URL } = require('url');
 
 const ForumScrapper = require('../lib/forum_scrapper');
 
 function forumRoute(view, req, res) {
-    debug(req.router);
+    debug(view);
     const originBase = req.app.get('sameAsBase');
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
@@ -68,25 +67,10 @@ function forumRoute(view, req, res) {
     });
 }
 
-module.exports.index = (req, res) => { forumRoute('forum', req, res); };
 module.exports.forum = (req, res) => { forumRoute('forum', req, res); };
-module.exports.activeTopics = (req, res) => { forumRoute('forum', req, res); };
-module.exports.unanswered = (req, res) => { forumRoute('forum', req, res); };
-module.exports.unreadPosts = (req, res) => { forumRoute('forum', req, res); };
-
 module.exports.topic = (req, res) => { forumRoute('topic', req, res); };
-module.exports.viewTopic = (req, res) => { forumRoute('topic', req, res); };
-module.exports.searchPosts = (req, res) => { forumRoute('topic', req, res); };
-module.exports.userPosts = (req, res) => { forumRoute('topic', req, res); };
-module.exports.newPosts = (req, res) => { forumRoute('topic', req, res); };
-
-module.exports.post = (req, res) => { forumRoute('post', req, res); };
-
 module.exports.user = (req, res) => { forumRoute('user', req, res); };
-
-module.exports.group = (req, res) => { forumRoute('memberList', req, res); };
-module.exports.memberList = (req, res) => { forumRoute('memberList', req, res); };
-
+module.exports.group = (req, res) => { forumRoute('group', req, res); };
 module.exports.file = (req, res) => {
     ForumScrapper.request(req.app.get('sameAsBase') + req.originalUrl).pipe(res)
 };

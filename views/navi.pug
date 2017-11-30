@@ -8,6 +8,10 @@ table.navi
             if navi.forum && navi.forum !== base+'/'
                 | &nbsp;&gt;&nbsp;
                 a(href=navi.forum) #{navi.forumTitle}
+            br
+            a(href='/active-topics.html') aktivní témata
+            | &nbsp;|&nbsp;
+            a(href='/unanswered.html') témata bez odpovědí
         td.paging
             if navi.page > 0
                 if navi.page > 1
@@ -27,3 +31,7 @@ table.navi
             a(href=asJson) json
             | &nbsp;|&nbsp;
             a(href=sameAs) data source page
+            br
+            form(action='/search.php' method='get')
+                input#keywords.inputbox(name='keywords' maxlength='128' title='Hledat klíčová slova' value="Hledej…" onclick="if(this.value=='Hledej…')this.value='';" onblur="if(this.value=='')this.value='Hledej…';" type="text")
+                input.button(value='Hledat' type='submit')

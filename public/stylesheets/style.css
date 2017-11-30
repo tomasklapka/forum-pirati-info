@@ -162,3 +162,18 @@ table.navi td.links {
   width: 40%;
   text-align: right;
 }
+
+form, input {
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+input.inputbox {
+  border: 1px solid black;
+}
+
+input.button {
+  padding: 0 1em;
+  margin-left: 0.2em;
+  border: 1px solid black;
+}

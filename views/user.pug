@@ -8,6 +8,11 @@ block content
                 | uživatelské jméno:
             td.column2
                 | #{user.username}
+                | (
+                a(href='./posts/') příspěvky
+                | &nbsp;|&nbsp;
+                a(href='./topics/') témata
+                | )
         tr
             td.column1
                 | avatar:
@@ -18,6 +23,9 @@ block content
                 | rank:
             td.column2
                 | #{user.rank}
+        tr
+            td.column1
+            td.column2
         tr
             td.column1
                 | výchozí skupina:
@@ -102,8 +110,9 @@ block content
             td.column1
                 | skupiny:
             td.column2
-                - var n_groups = user.groups.length-1
+                - const keys = Object.keys(user.groups)
+                - const last_i = keys[keys.length-1]
                 each group, i in user.groups
                     a(href=group.url) #{group.title}
-                    if i !== n_groups
+                    if last_i !== i
                         |#{', '}
