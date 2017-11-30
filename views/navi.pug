@@ -1,0 +1,29 @@
+table.navi
+    tr
+        td.path
+            a(href=base) Fórum
+            if navi.parent && navi.parent !== base+'/'
+                | &nbsp;&gt;&nbsp;
+                a(href=navi.parent) #{navi.parentTitle}
+            if navi.forum && navi.forum !== base+'/'
+                | &nbsp;&gt;&nbsp;
+                a(href=navi.forum) #{navi.forumTitle}
+        td.paging
+            if navi.page > 0
+                if navi.page > 1
+                    | &nbsp;&nbsp;
+                    a(href=navi.first) |&lt;
+                if navi.prev
+                    | &nbsp;&nbsp;
+                    a(href=navi.prev) &lt;&lt;
+                | &nbsp;Stránka #{navi.page} z #{navi.pages}
+                if navi.next
+                    | &nbsp;&nbsp;
+                    a(href=navi.next) &gt;&gt;
+                if navi.page < navi.pages
+                    | &nbsp;&nbsp;
+                    a(href=navi.last) &gt;|
+        td.links
+            a(href=asJson) json
+            | &nbsp;|&nbsp;
+            a(href=sameAs) data source page

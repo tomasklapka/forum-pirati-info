@@ -34,18 +34,21 @@ app.use(bodyParser.json());
 app.get('/', forum.index);
 //app.get(/^\/unreadposts(-(\d+))?\.html$/, forum.unreadPosts);
 //app.get(/^\/newposts(-(\d+))?\.html$/, forum.newPosts);
-app.get(/^\/active-topics(-(\d+))?\.html$/, forum.activeTopics);
-app.get(/^\/unanswered(-(\d+))?\.html$/, forum.unanswered);
-app.get(/^\/memberlist(-(\d+))?\.php$/, forum.memberList);
-app.get(/^\/viewtopic.php$/, forum.viewTopic);
-app.get(/^\/search.php$/, forum.searchPosts);
-app.get(/^\/post(\d+)\.html$/, forum.post);
-app.get(/^\/[\w\d-]+-u(\d+)\/posts\/?$/, forum.userPosts);
+app.get(/^\/active-topics(-(\d+))?\.html/, forum.activeTopics);
+app.get(/^\/unanswered(-(\d+))?\.html/, forum.unanswered);
+app.get(/^\/memberlist(-(\d+))?\.php/, forum.memberList);
+app.get(/^\/viewtopic.php/, forum.viewTopic);
+app.get(/^\/search.php/, forum.searchPosts);
+app.get(/^\/post(\d+)\.html/, forum.post);
+app.get(/^\/[\w\d-]+-u(\d+)\/posts\/?(page(\d+)\.html)?/, forum.userPosts);
 //app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?$/, forum.userTopics);
-app.get(/^\/[\w\d-]+-u(\d+)\/?$/, forum.user);
-app.get(/^\/[\w\d-]+-g(\d+)(-(\d+))?\.html$/, forum.group);
-app.get(/^\/[\w\d-]+-f(\d+)\/[\w\d-]+-t(\d+)(-(\d+))?\.html$/, forum.topic);
-app.get(/^\/[\w\d-]+-f(\d+)\/?(page(\d+)\.html)?$/, forum.forum);
+app.get(/^\/[\w\d-]+-u(\d+)\/?/, forum.user);
+app.get(/^\/[\w\d-]+-g(\d+)(-(\d+))?\.html/, forum.group);
+app.get(/^\/[\w\d-]+-f(\d+)\/[\w\d-]+-t(\d+)(-(\d+))?\.html/, forum.topic);
+app.get(/^\/[\w\d-]+-f(\d+)\/?(page(\d+)\.html)?/, forum.forum);
+app.get(/^\/download\/file\.php/, forum.file);
+app.get(/^\/images\//, forum.file);
+app.get(/^\/resources\//, forum.file);
 
 function listen() {
     app.listen(app.get('port'), function () {

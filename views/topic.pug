@@ -1,0 +1,44 @@
+extends layout
+
+block content
+
+    include rules
+
+    if poll
+        ul.poll
+            li
+                h2= poll.title
+                table#poll.section
+                    each option in poll.options
+                        tr
+                            td.title
+                                | #{option.text}
+                            td.stat1
+                                | #{option.votes}
+                            td.polloption
+                                span.polloption(style='width: '+option.percents+'%;')
+                                    | &nbsp;
+                            td.stat2
+                                | #{option.percents}%
+                div.poll_stats
+                    | #{poll.n_votes} hlasů. #{poll.n_voters} hlasujících
+
+    ul#posts
+        each post in posts
+            li(id='p'+post.phpbbid)
+                div.post
+                    a(href=post.url) #{post.title}
+                    | &nbsp;od&nbsp;
+                    a(href=post.user) #{post.username}
+                    | &nbsp;#{post.created}
+                    hr
+                    div.postContent
+                        p!= post.content
+                    if post.likes && post.likes.length > 0
+                        hr
+                        - var n_likes = post.likes.length - 1
+                        | příspěvek získal #{n_likes+1} poděkování od:&nbsp;
+                        each like, i in post.likes
+                            a(href=like.user) #{like.username}
+                            if n_likes !== i
+                                | #{', '}

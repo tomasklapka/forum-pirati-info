@@ -1,0 +1,109 @@
+extends layout
+
+block content
+
+    include rules
+
+    ul#sections
+        each section, i in sections
+            li.section
+                if section.url
+                    a(href=section.url) #{section.title}
+                if section.forums.length > 0
+                    table.forums.section
+                        tr
+                            th.icon
+                            th.title.left
+                                | FÓRUM
+                            th.stat1.center
+                                | TÉMATA
+                            th.stat2.center
+                                | PŘÍSPĚVKY
+                            th.last_post.left
+                                | POSLEDNÍ PŘÍSPĚVEK
+                        each forumId in section.forums
+                            - var forum = forums[forumId]
+                            if forum
+                                tr
+                                    td.icon
+                                        if forum.locked
+                                            div.lock
+                                                | &nbsp;
+                                    td.title
+                                        a(href=forum.url) #{forum.title}
+                                    td.stat1
+                                        | #{forum.n_topics}
+                                    td.stat2
+                                        | #{forum.n_posts}
+                                    td.last_post
+                                        if forum.last_post
+                                            a(href=forum.last_post.post) #{forum.last_post.created}
+                                            | &nbsp;od&nbsp;
+                                            a(href=forum.last_post.user) #{forum.last_post.username}
+                if section.announcements.length > 0
+                    table.announcements.section
+                        tr
+                            th.icon
+                            th.title.left
+                                | OZNÁMENÍ
+                            th.stat1.center
+                                | ODPOVĚDI
+                            th.stat2.center
+                                | ZOBRAZENÍ
+                            th.last_post.left
+                                | POSLEDNÍ PŘÍSPĚVEK
+                        each announcementId in section.announcements
+                            - var announcement = announcements[announcementId]
+                            if announcement
+                                tr
+                                    td.icon
+                                        if announcement.locked
+                                            div.lock
+                                                | &nbsp;
+                                    td.title
+                                        a(href=announcement.url) #{announcement.title}
+                                        br
+                                        | #{announcement.created} od&nbsp;
+                                        a(href=announcement.user) #{announcement.username}
+                                    td.stat1
+                                        | #{announcement.n_posts}
+                                    td.stat2
+                                        | #{announcement.n_views}
+                                    td.last_post
+                                        if announcement.last_post
+                                            a(href=announcement.last_post.post) #{announcement.last_post.created}
+                                            | &nbsp;od&nbsp;
+                                            a(href=announcement.last_post.user) #{announcement.last_post.username}
+                if section.threads.length > 0
+                    table.topics.section
+                        tr
+                            th.icon
+                            th.title.left
+                                | TÉMATA
+                            th.stat1.center
+                                | ODPOVĚDI
+                            th.stat2.center
+                                | ZOBRAZENÍ
+                            th.last_post.left
+                                | POSLEDNÍ PŘÍSPĚVEK
+                        each threadId in section.threads
+                            - var topic = threads[threadId]
+                                tr
+                                    td.icon
+                                        if topic.locked
+                                            div.lock
+                                                | &nbsp;
+                                    td.title
+                                        a(href=topic.url) #{topic.title}
+                                        br
+                                        | #{topic.created} od&nbsp;
+                                        a(href=topic.user) #{topic.username}
+                                    td.stat1
+                                        | #{topic.n_posts}
+                                    td.stat2
+                                        | #{topic.n_views}
+                                    td.last_post
+                                        if topic.last_post
+                                            a(href=topic.last_post.post) #{topic.last_post.created}
+                                            | &nbsp;od&nbsp;
+                                            a(href=topic.last_post.user) #{topic.last_post.username}

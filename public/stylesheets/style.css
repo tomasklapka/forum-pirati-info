@@ -1,8 +1,164 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 2em 4em;
+  font: 1em "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+  color: #105289;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+ul {
+  list-style-type: none;
+}
+
+h1 {
+  margin-bottom: 0;
+}
+
+#mirrornote {
+  font-size: 0.8em;
+  margin-bottom: 1em;
+}
+
+ul#sections, ul.poll, ul#posts {
+  padding: 0;
+}
+
+#rules_button, #rules {
+  background-color: hotpink;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}
+
+ul.poll {
+  background-color: burlywood;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}
+
+div.poll_stats {
+  text-align: right;
+  margin-top: 0.5em;
+}
+
+cite {
+  margin-right: 0.3em;
+}
+
+blockquote {
+  border: 1px solid midnightblue;
+  margin-bottom: 0.2em;
+}
+
+.post, blockquote {
+  background-color: #e1ebf2;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}
+
+.post {
+  font-size: 0.9em;
+  margin-bottom: 1em;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+
+li.section {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 1em;
+}
+
+table.section {
+  width: 100%;
+  margin-right: 3em;
+}
+
+table.section {
+  border-radius: 0.5em;
+  background-color: #e1ebf2;
+}
+
+table.section tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+ul.poll table.section tr:nth-child(even) {
+  background-color: khaki;
+}
+
+table.section td, table.section th {
+  padding: 0.4em 1em 0.2em 1em;
+}
+
+table.section th {
+  font-weight: normal;
+}
+
+td.icon {
+  width: 0.6em;
+  padding: 0.2em;
+}
+
+div.lock {
+  background: url('data:image/svg+xml;base64,PHN2ZyBpZD0iaWNvbi1sb2NrIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHBhdGggZD0iTTEwMy44NzYsNDUuMjA4TDEwMy44NzYsNDUuMjA4YzAtMjQuMTkzLTE5LjY4My00My44NzUtNDMuODc1LTQzLjg3NWMtMjQuMTkzLDAtNDMuODc1LDE5LjY4Mi00My44NzUsNDMuODc1djBINXY2OS43NWgxMTANCgl2LTY5Ljc1SDEwMy44NzZ6IE0zNC4xMjYsNDUuMjA4YzAtMTQuMjY4LDExLjYwNy0yNS44NzUsMjUuODc1LTI1Ljg3NVM4NS44NzYsMzAuOTQsODUuODc2LDQ1LjIwOHYwTDM0LjEyNiw0NS4yMDhMMzQuMTI2LDQ1LjIwOHoNCgkgTTY1Ljg3NSw3OC4xMjZ2MjAuMDU5SDUzLjk4NlY3OC4xMjJjLTIuNDg1LTEuODI4LTQuMTA1LTQuNzY2LTQuMTA1LTguMDljMC01LjU1MSw0LjUtMTAuMDUsMTAuMDUxLTEwLjA1DQoJYzUuNTUyLDAsMTAuMDUsNC41LDEwLjA1LDEwLjA1QzY5Ljk4Miw3My4zNTYsNjguMzYyLDc2LjI5Niw2NS44NzUsNzguMTI2eiIvPg0KPC9zdmc+') no-repeat center center / 100%;
+}
+
+td.title {
+  width: auto;
+}
+
+table#poll td.title {
+  font-size: 0.8em;
+  width: 20em;
+}
+
+td.polloption {
+  width: auto;
+}
+
+span.polloption {
+  display: block;
+  height: 100%;
+  background-color: crimson;
+}
+
+td.stat1, td.stat2 {
+  text-align: right;
+  width: 3em;
+}
+
+td.last_post {
+  width: 20em;
+}
+
+table.navi {
+  width: 100%;
+  font-size: 1em;
+}
+
+table.navi td.path {
+  width: 40%;
+}
+
+table.navi td.paging {
+  width: 20%;
+  text-align: center;
+}
+
+table.navi td.links {
+  width: 40%;
+  text-align: right;
 }

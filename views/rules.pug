@@ -1,0 +1,8 @@
+if rules
+    span(onclick="this.nextSibling.style.display = 'inline'; this.style.display = 'none';" title='rozkliknout?')
+        #rules_button
+            strong
+                | Pravidla fóra ...
+    span(style="display: none;" onclick="this.previousSibling.style.display = 'inline'; this.style.display = 'none';")
+        #rules
+            | !{rules}

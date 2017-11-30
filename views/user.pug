@@ -1,0 +1,109 @@
+extends layout
+
+block content
+
+    table#user.section
+        tr
+            td.column1
+                | uživatelské jméno:
+            td.column2
+                | #{user.username}
+        tr
+            td.column1
+                | avatar:
+            td.column2
+                img(src=user.avatarSrc)
+        tr
+            td.column1
+                | rank:
+            td.column2
+                | #{user.rank}
+        tr
+            td.column1
+                | výchozí skupina:
+            td.column2
+                a(href=user.defaultGroup.url) #{user.defaultGroup.title}
+        tr
+            td.column1
+                | bydliště:
+            td.column2
+                | #{user.address}
+        tr
+            td.column1
+                | ukázat na mapě:
+            td.column2
+                | #{user.showOnMap ? 'ano' : 'ne'}
+        tr
+            td.column1
+                | povolání:
+            td.column2
+                | #{user.occupation}
+        tr
+            td.column1
+                | profese:
+            td.column2
+                | #{user.profession}
+        tr
+            td.column1
+                | zájmy:
+            td.colum2
+                | #{user.interests}
+        tr
+            td.column1
+                | věk:
+            td.column2
+                | #{user.age}
+        tr
+            td.column1
+                | www:
+            td.column2
+                | #{user.www}
+        tr
+            td.column1
+                | jabber:
+            td.column2
+                | #{user.jabber}
+        tr
+            td.column1
+                | icq:
+            td.column2
+                | #{user.icq}
+        tr
+            td.column1
+                | registrace:
+            td.column2
+                | #{user.registered}
+        tr
+            td.column1
+                | poslední návštěva:
+            td.column2
+                | #{user.lastVisit}
+        tr
+            td.column1
+                | příspěvků:
+            td.column2
+                | #{user.totalPosts}
+        tr
+            td.column1
+                | dal poděkování:
+            td.column2
+                | #{user.likesGave}
+        tr
+            td.column1
+                | dostal poděkování:
+            td.column2
+                | #{user.likesGot}
+        tr
+            td.column1
+                | podpis:
+            td.column2
+                | !{user.signature}
+        tr
+            td.column1
+                | skupiny:
+            td.column2
+                - var n_groups = user.groups.length-1
+                each group, i in user.groups
+                    a(href=group.url) #{group.title}
+                    if i !== n_groups
+                        |#{', '}
