@@ -37,7 +37,7 @@ app.get(/^\/unanswered(-(\d+))?\.html/, forum.forum);
 
 app.get(/^\/viewtopic.php/, forum.topic);
 app.get(/^\/search.php/, forum.topic);
-app.get(/^\/.*(topic|post)(\d+)\.html/, forum.topic);
+app.get(/^\/.*(topic|post)(\d+)(-\d+)?\.html/, forum.topic);
 app.get(/^\/[\w\d-]+-u(\d+)\/posts\/?(page(\d+)\.html)?/, forum.topic);
 app.get(/^\/[\w\d-]+-f(\d+)\/[\w\d-]+-t(\d+)(-(\d+))?\.html/, forum.topic);
 
