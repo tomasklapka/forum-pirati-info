@@ -8,11 +8,18 @@ if poll
                         td.title
                             | #{option.text}
                         td.stat1
-                            | #{option.votes}
+                            if !poll.resultsUrl
+                                | #{option.votes}
                         td.polloption
-                            span.polloption(style='width: ' + option.percents_voters + '%;')
-                                | &nbsp;
+                            if !poll.resultsUrl
+                                span.polloption(style='width: ' + option.percents_voters + '%;')
+                                    | &nbsp;
                         td.stat2
-                            | #{option.percents}%
+                            if !poll.resultsUrl
+                                | #{option.percents}%
             div.poll_stats
-                | #{poll.n_votes} hlasů. #{poll.n_voters} hlasujících
+                if poll.resultsUrl
+                    | Hlasování probíhá.&nbsp;
+                    a(href=poll.resultsUrl) Zobraz výsledky
+                else
+                    | #{poll.n_votes} hlasů. #{poll.n_voters} hlasujících

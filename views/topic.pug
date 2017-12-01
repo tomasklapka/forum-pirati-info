@@ -38,9 +38,10 @@ block content
                             strong
                                 | #{post.username}
                         br
-                        i
-                            | #{post.user_rank}
-                        br
+                        if post.user_rank
+                            i
+                                | #{post.user_rank}
+                            br
                         if post.user_posts > 0
                             br
                             | Příspěvků: #{post.user_posts}

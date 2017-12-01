@@ -207,7 +207,7 @@ div.postProfile {
 .post {
   width: 100%;
   display: table;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.7em;
 }
 
 .postColumn {
@@ -217,11 +217,11 @@ div.postProfile {
 }
 
 .postBody {
-  width: 80%;
+  width: 75%;
 }
 
 .postProfile {
-  width: 20%;
+  width: 15%;
   display: table-cell;
   font-size: 0.9em;
   padding: 0.5em;
