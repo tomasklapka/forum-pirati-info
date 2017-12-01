@@ -33,5 +33,5 @@ table.navi
             a(href=sameAs) data source page
             br
             form(action='/search.php' method='get')
-                input#keywords.inputbox(name='keywords' maxlength='128' title='Hledat klíčová slova' value="Hledej…" onclick="if(this.value=='Hledej…')this.value='';" onblur="if(this.value=='')this.value='Hledej…';" type="text")
+                input#keywords.inputbox(name='keywords' maxlength='128' title='Hledat klíčová slova' value=keywords?keywords:"Hledej…" onclick="if(this.value=='Hledej…')this.value='';" onblur="if(this.value=='')this.value='Hledej…';" type="text")
                 input.button(value='Hledat' type='submit')
