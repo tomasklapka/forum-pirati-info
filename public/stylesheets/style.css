@@ -52,15 +52,10 @@ blockquote {
   margin-bottom: 0.2em;
 }
 
-.post, blockquote {
+div.postProfile, div.postBody, blockquote {
   background-color: #e1ebf2;
   border-radius: 0.5em;
   padding: 0.5em;
-}
-
-.post {
-  font-size: 0.9em;
-  margin-bottom: 1em;
 }
 
 .left {
@@ -185,4 +180,65 @@ input.button {
   padding: 0 1em;
   margin-left: 0.2em;
   border: 1px solid black;
+}
+
+div.postProfile a {
+  font-size: 0.9em;
+}
+
+/*
+div.postBody {
+  margin: 0 0 0 0.5em;
+}
+
+div.postProfile {
+  margin: 0 0 0 0.5em;
+  font-size: 0.9em;
+}
+
+.post {
+  font-size: 0.9em;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+*/
+
+.post {
+  width: 100%;
+  display: table;
+  margin-bottom: 0.5em;
+}
+
+.postColumn {
+  display: table-cell;
+  padding: 0.5em;
+  vertical-align: top;
+}
+
+.postBody {
+  width: 80%;
+}
+
+.postProfile {
+  width: 20%;
+  display: table-cell;
+  font-size: 0.9em;
+  padding: 0.5em;
+  border-left: 2px solid white;
+}
+
+hr {
+  border: 1px solid white;
+  margin: 0;
+  padding: 0;
+}
+
+p.likes {
+  font-size: 0.9em;
+}
+
+
+p {
+  margin: 0.5em 0;
 }
