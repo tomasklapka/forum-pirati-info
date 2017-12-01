@@ -144,6 +144,10 @@ td.last_post {
   width: 20em;
 }
 
+td.column1 {
+  width: 20em;
+}
+
 table.navi {
   width: 100%;
   font-size: 1em;

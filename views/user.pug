@@ -7,8 +7,10 @@ block content
             td.column1
                 | uživatelské jméno:
             td.column2
-                | #{user.username}
-                | (
+                span(style=user.color?'color: '+user.color+';':'')
+                    strong
+                        | #{user.username}
+                | &nbsp;(
                 a(href='./posts/') příspěvky
                 | &nbsp;|&nbsp;
                 a(href='./topics/') témata
@@ -23,9 +25,6 @@ block content
                 | rank:
             td.column2
                 | #{user.rank}
-        tr
-            td.column1
-            td.column2
         tr
             td.column1
                 | výchozí skupina:

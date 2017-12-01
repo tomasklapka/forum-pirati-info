@@ -39,7 +39,7 @@ mixin section(list, elements, headers, type)
                             if type !== 'forum'
                                 br
                                 | #{el.created} od&nbsp;
-                                a(href=el.user) #{el.username}
+                                a(href=el.user style=el.user_color?'color: '+el.user_color+';':'') #{el.username}
                         if type === 'forum'
                             td.stat1
                                 | #{el.n_topics}
@@ -54,5 +54,5 @@ mixin section(list, elements, headers, type)
                             if el.last_post
                                 a(href=el.last_post.post) #{el.last_post.created}
                                 | &nbsp;od&nbsp;
-                                a(href=el.last_post.user) #{el.last_post.username}
+                                a(href=el.last_post.user style=el.last_post.user_color?'color: '+el.last_post.user_color+';':'') #{el.last_post.username}
 

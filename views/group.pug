@@ -19,7 +19,7 @@ block content
                 each user in users
                     tr
                         td.title
-                            a(href=user.url) #{user.username}
+                            a(href=user.url style=user.color?'color: ' + user.color + ';':'') #{user.username}
                         td.stat1
                             | #{user.n_posts}
                         td.last_post

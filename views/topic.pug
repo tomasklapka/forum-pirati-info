@@ -12,16 +12,19 @@ block content
                 div.post
                     a(href=post.url) #{post.title}
                     | &nbsp;od&nbsp;
-                    a(href=post.user) #{post.username}
+                    a(href=post.user style=post.user_color?'color: '+post.user_color+';':'') #{post.username}
                     | &nbsp;#{post.created}
                     hr
                     div.postContent
                         p!= post.content
+                    if post.signature && post.signature.length > 0
+                        hr
+                        p!= post.signature
                     if post.likes && post.likes.length > 0
                         hr
                         - var n_likes = post.likes.length - 1
                         | příspěvek získal #{n_likes+1} poděkování od:&nbsp;
                         each like, i in post.likes
-                            a(href=like.user) #{like.username}
+                            a(href=like.user style=like.user_color?'color: '+like.user_color+';':'') #{like.username}
                             if n_likes !== i
                                 | #{', '}
