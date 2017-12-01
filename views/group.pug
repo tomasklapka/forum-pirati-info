@@ -12,6 +12,8 @@ block content
                 tr
                     th.title.left
                         | UŽIVATEL
+                    th.rank.right
+                        | RANK
                     th.stat1.right
                         | PŘÍSPĚVKY
                     th.last_post.left
@@ -20,6 +22,8 @@ block content
                     tr
                         td.title
                             a(href=user.url style=user.color?'color: ' + user.color + ';':'') #{user.username}
+                        td.rank
+                            | #{user.rank}
                         td.stat1
                             | #{user.n_posts}
                         td.last_post

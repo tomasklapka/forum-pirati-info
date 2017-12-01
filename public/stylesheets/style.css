@@ -135,6 +135,11 @@ span.polloption {
   background-color: crimson;
 }
 
+td.rank {
+  text-align: right;
+  width: 20em;
+}
+
 td.stat1, td.stat2 {
   text-align: right;
   width: 3em;
