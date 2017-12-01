@@ -4,24 +4,7 @@ block content
 
     include rules
 
-    if poll
-        ul.poll
-            li
-                h2= poll.title
-                table#poll.section
-                    each option in poll.options
-                        tr
-                            td.title
-                                | #{option.text}
-                            td.stat1
-                                | #{option.votes}
-                            td.polloption
-                                span.polloption(style='width: '+option.percents+'%;')
-                                    | &nbsp;
-                            td.stat2
-                                | #{option.percents}%
-                div.poll_stats
-                    | #{poll.n_votes} hlasů. #{poll.n_voters} hlasujících
+    include poll
 
     ul#posts
         each post in posts
