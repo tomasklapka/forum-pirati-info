@@ -6,6 +6,21 @@ block content
 
     include poll
 
+    - var n_gmoderators = moderators.groups.length
+    - var n_umoderators = moderators.users.length
+    if n_gmoderators > 0 || n_umoderators > 0
+        p.moderators Moderátor:#{' '}
+            if n_gmoderators > 0
+                each group, i in moderators.groups
+                    a(href=group.url style=group.color?'color: '+group.color+';':'') #{group.title}
+                    if n_gmoderators-1 !== i || n_umoderators > 0
+                        | #{', '}
+            if n_umoderators > 0
+                each user, i in moderators.users
+                    a(href=user.url style=user.color ? 'color: ' + user.color + ';' : '') #{user.title}
+                    if n_umoderators-1 !== i
+                        | #{', '}
+
     ul#posts
         each post in posts
             li(id='p'+post.phpbbid)

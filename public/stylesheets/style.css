@@ -242,3 +242,7 @@ p.likes {
 p {
   margin: 0.5em 0;
 }
+
+.float_right {
+  float: right;
+}
