@@ -14,7 +14,7 @@ const app = express();
 const config = require('./config.json');
 
 app.set('base', config.base);
-app.set('sameAsBase', config.sameAsBase);
+app.set('originBase', config.originBase);
 app.set('port', config.port || process.env.PORT || 3042);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
@@ -66,7 +66,7 @@ function listen() {
 }
 
 ForumScrapper
-    .login(config.sameAsBase+'/ucp.php?mode=login', config.username, config.password)
+    .login(config.originBase+'/ucp.php?mode=login', config.username, config.password)
     .then(() => {
         listen();
     })

@@ -1,6 +1,6 @@
 {
   "base": "https://forum.pirati.info",
-  "sameAsBase": "https://forum.pirati.cz",
+  "originBase": "https://forum.pirati.cz",
   "username": "<PHPBBUSER>",
   "password": "<PHPBBPASS>"
 }

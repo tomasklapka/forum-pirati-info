@@ -7,51 +7,14 @@ const ForumScrapper = require('../lib/forum_scrapper');
 
 function forumRoute(view, req, res) {
     debug(view);
-    const originBase = req.app.get('sameAsBase');
+    const originBase = req.app.get('originBase');
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
     originUrl = originUrl.toString();
     const jsonRequest = req.query.json === '' || req.query.json === 'true' || req.query.json === '1';
 
-    const scrapper = new ForumScrapper(originUrl, req.app.get('base'), originBase);
-    const PageType = scrapper.map.PageType;
-    scrapper
-        .scrap().then((data) => {
-        if (data.links && data.links.length > 0) {
-            data.links.forEach((link) => {
-                if (link.url.indexOf(originBase) === 0) {
-                    if ((link.type === PageType.Forum) ||
-                        (link.type === PageType.Thread) ||
-                        (link.type === PageType.Group) ||
-                        (link.type === PageType.User)) {
-                        //debug('queueing: "%s"', link.url);
-                        // TODO queue for scrapping.
-                    }
-                }
-            });
-        }
-        data.typeId = data.type;
-        for (const t in PageType) {
-            if (PageType.hasOwnProperty(t) && PageType[t] === data.typeId) {
-                data.type = t
-            }
-        }
-        let properties = [ '$', 'request', 'defaultRequest', 'httpRequestCache' ];
-        properties.forEach((prop) => {
-            delete data[prop];
-        });
-        if (data.user.username === null) {
-            data.user = null;
-        }
-        if (data.poll && (!data.poll.title || data.poll.title.length === 0)) {
-            data.poll = null;
-        }
-
-        data['sameAs'] = originUrl;
-        data['asJson'] = new URL(req.protocol + '://' + req.get('host') + req.originalUrl);
-        data['asJson'].searchParams.set('json', 'true');
+    ForumScrapper.scrap(originUrl, req.app.get('base'), originBase).then((data) => {
         debug(req.params);
-
         const accepted = req.accepts('text/html', 'application/json', 'application/ld+json');
         debug(accepted);
         if (accepted === 'application/json' || jsonRequest) {
