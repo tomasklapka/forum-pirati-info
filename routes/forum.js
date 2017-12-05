@@ -35,5 +35,5 @@ module.exports.topic = (req, res) => { forumRoute('topic', req, res); };
 module.exports.user = (req, res) => { forumRoute('user', req, res); };
 module.exports.group = (req, res) => { forumRoute('group', req, res); };
 module.exports.file = (req, res) => {
-    ForumScrapper.request(req.app.get('sameAsBase') + req.originalUrl).pipe(res)
+    ForumScrapper.request(req.app.get('originBase') + req.originalUrl).pipe(res)
 };
