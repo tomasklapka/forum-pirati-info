@@ -5,29 +5,86 @@ const { URL } = require('url');
 
 const ForumScrapper = require('../lib/forum_scrapper');
 
+function renderError(res, err) {
+    debug('500 backend error');
+    debug(err);
+    res.status(500).send('backend error');
+}
+
+function render(req, res, view, data) {
+    debug(req.params);
+    debug(req.query);
+    const accepted = req.accepts('text/html', 'application/json', 'application/ld+json');
+    debug(accepted);
+    // json
+    const jsonRequest = req.query.json === '' || req.query.json === 'true' || req.query.json === '1';
+    if (accepted === 'application/json' || jsonRequest) {
+        res.json(data);
+        return;
+    }
+    // text/html
+    res.render(view, data);
+}
+
+function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
+
+    // load json from cache
+    cache.load(url).then((cached) => {
+        // json in cache?
+        debug('json in cache?');
+        if (cached === null) {
+            // no... proceed with scrapping
+            debug('no');
+            ForumScrapper.scrap(url, req.app.get('base'), req.app.get('originBase')).then((data) => {
+                // cache post url if post url
+                if (isPostUrl) {
+                    cache.setPostUrl(originUrl, data.url).catch((err) => {
+                        debug(err);
+                    });
+                }
+                // save scrapped json if cacheable
+                debug('cacheable?');
+                if (ForumScrapper.cacheableType(data.typeId)) {
+                    debug('yes... caching');
+                    cache.save(data).catch((err) => {
+                        debug(err);
+                    });
+                }
+                // return scrapped json
+                render(req, res, view, data);
+            }).catch((err) => { renderError(res, err); });
+        } else {
+            // yes... return json from cache
+            debug('yes');
+            render(req, res, view, cached.content);
+        }
+    }).catch((err) => { renderError(res, err); });
+
+}
+
 function forumRoute(view, req, res) {
     debug(view);
+    const cache = req.app.get('jsonCache');
     const originBase = req.app.get('originBase');
+
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
     originUrl = originUrl.toString();
-    const jsonRequest = req.query.json === '' || req.query.json === 'true' || req.query.json === '1';
+    let url = originUrl;
 
-    ForumScrapper.scrap(originUrl, req.app.get('base'), originBase).then((data) => {
-        debug(req.params);
-        const accepted = req.accepts('text/html', 'application/json', 'application/ld+json');
-        debug(accepted);
-        if (accepted === 'application/json' || jsonRequest) {
-            res.json(data);
-            return;
-        }
-        // fallback to text/html
-        res.render(view, data);
-    }).catch((err) => {
-        debug('500 backend error');
-        debug(err);
-        res.status(500).send("backend error");
-    });
+    if (/\/post\d+\.html/.exec(originUrl)) {
+        debug('--- post URL ---');
+        debug(originUrl);
+        cache.getPostUrl(originUrl).then((postUrl) => {
+            if (postUrl) {
+                url = postUrl;
+                debug('new Url: %s', url);
+            }
+            getDataAndRender(url, view, req, res, cache, true, originUrl);
+        });
+    } else {
+        getDataAndRender(url, view, req, res, cache);
+    }
 }
 
 module.exports.forum = (req, res) => { forumRoute('forum', req, res); };

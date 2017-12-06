@@ -8,13 +8,16 @@ const express = require('express'),
     bodyParser = require('body-parser');
 
 const ForumScrapper = require('./lib/forum_scrapper');
+const JsonCache = require('./lib/json_cache');
 
 const app = express();
 
 const config = require('./config.json');
+const jsonCache = new JsonCache(config.jsonCache);
 
 app.set('base', config.base);
 app.set('originBase', config.originBase);
+app.set('jsonCache', jsonCache);
 app.set('port', config.port || process.env.PORT || 3042);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
@@ -39,7 +42,7 @@ app.get(/^\/viewtopic.php/, forum.topic);
 app.get(/^\/search.php/, forum.topic);
 app.get(/^\/.*(topic|post)(\d+)(-\d+)?\.html/, forum.topic);
 app.get(/^\/[\w\d-]+-u(\d+)\/posts\/?(page(\d+)\.html)?/, forum.topic);
-app.get(/^\/[\w\d-]+-f(\d+)\/[\w\d-]+-t(\d+)(-(\d+))?\.html/, forum.topic);
+app.get(/^\/([\w\d-]+-f(\d+)|announces)\/[\w\d-]+-t(\d+)(-(\d+))?\.html/, forum.topic);
 
 app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?(page(\d+)\.html)?/, forum.forum);
 app.get(/^\/[\w\d-]+-f(\d+)\/?(page(\d+)\.html)?/, forum.forum);
@@ -58,23 +61,32 @@ app.get(/^\/images\//, forum.file);
 //app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?$/, forum.forum);
 
 
-
 function listen() {
     app.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
     });
 }
 
-ForumScrapper
-    .login(config.originBase+'/ucp.php?mode=login', config.username, config.password)
-    .then(() => {
-        listen();
-    })
-    .catch((err) => {
-        console.log('Could not login as ' + config.username + '.');
-        console.log(err);
-        debug(err);
-        listen();
-    });
+function login() {
+    ForumScrapper
+        .login(config.originBase+'/ucp.php?mode=login', config.username, config.password)
+        .then(() => {
+            listen();
+        })
+        .catch((err) => {
+            console.log('Could not login as ' + config.username + '.');
+            console.log(err);
+            listen();
+        });
+}
+
+jsonCache.init().then(() => {
+    login();
+}).catch((err) => {
+    console.log('Could not init cache ' + config.jsonCache + '.');
+    console.log(err);
+    login();
+});
+
 
 
