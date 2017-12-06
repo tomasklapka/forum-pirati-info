@@ -12,13 +12,13 @@ function renderError(res, err) {
 }
 
 function render(req, res, view, data) {
-    debug(req.params);
-    debug(req.query);
+    debug('req.params: %o', req.params);
+    debug('req.query: %o', req.query);
     const accepted = req.accepts('text/html', 'application/json', 'application/ld+json');
-    debug(accepted);
+    debug('accepted: "%s"', accepted);
     // json
-    const jsonRequest = req.query.json === '' || req.query.json === 'true' || req.query.json === '1';
-    if (accepted === 'application/json' || jsonRequest) {
+    const jsonQueryRequest = req.query.json === '' || req.query.json === 'true' || req.query.json === '1';
+    if (accepted === 'application/json' || jsonQueryRequest) {
         res.json(data);
         return;
     }
@@ -34,25 +34,26 @@ function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
         debug('json in cache?');
         if (cached === null) {
             // no... proceed with scrapping
-            debug('no');
-            ForumScrapper.scrap(url, req.app.get('base'), req.app.get('originBase')).then((data) => {
-                // cache post url if post url
-                if (isPostUrl) {
-                    cache.setPostUrl(originUrl, data.url).catch((err) => {
-                        debug(err);
-                    });
-                }
-                // save scrapped json if cacheable
-                debug('cacheable?');
-                if (ForumScrapper.cacheableType(data.typeId)) {
-                    debug('yes... caching');
+            debug('no... scrapping...');
+            ForumScrapper
+                .scrap(url, req.app.get('base'), req.app.get('originBase'))
+                .then((data) => {
+                    // cache post url if post url
+                    if (isPostUrl) {
+                        cache.setPostUrl(originUrl, data.url).catch((err) => {
+                            debug(err);
+                        });
+                    }
+                    // save scrapped json if cacheable
                     cache.save(data).catch((err) => {
                         debug(err);
                     });
-                }
-                // return scrapped json
-                render(req, res, view, data);
-            }).catch((err) => { renderError(res, err); });
+                    // return scrapped json
+                    render(req, res, view, data);
+                })
+                .catch((err) => {
+                    renderError(res, err);
+                });
         } else {
             // yes... return json from cache
             debug('yes');
@@ -63,18 +64,15 @@ function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
 }
 
 function forumRoute(view, req, res) {
-    debug(view);
+    debug('View: %s', view);
     const cache = req.app.get('jsonCache');
     const originBase = req.app.get('originBase');
-
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
     originUrl = originUrl.toString();
     let url = originUrl;
 
     if (/\/post\d+\.html/.exec(originUrl)) {
-        debug('--- post URL ---');
-        debug(originUrl);
         cache.getPostUrl(originUrl).then((postUrl) => {
             if (postUrl) {
                 url = postUrl;
