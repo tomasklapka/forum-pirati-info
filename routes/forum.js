@@ -26,7 +26,7 @@ function render(req, res, view, data) {
     res.render(view, data);
 }
 
-function scrap(url, view, req, res, cache, isPostUrl, originUrl, cached) {
+function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached) {
     ForumScrapper
         .scrap(url, req.app.get('base'), req.app.get('originBase'))
         .then((data) => {
@@ -56,16 +56,14 @@ function scrap(url, view, req, res, cache, isPostUrl, originUrl, cached) {
 
 function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
 
-    // load json from cache
     cache.load(url).then((cached) => {
-        // json in cache?
         debug('valid json in cache?');
-        if (cached === null || cached.invalid) {
-            // no... proceed with scrapping
+        const nocacheRequest = req.query.nocache === '' || req.query.nocache === 'true' || req.query.nocache === '1';
+        if (nocacheRequest) { debug('nocache request - invalidating'); }
+        if (cached === null || cached.invalid || nocacheRequest) {
             debug('no... scrapping...');
-            scrap(url, view, req, res, cache, isPostUrl, originUrl, cached)
+            scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached)
         } else {
-            // yes... return json from cache
             debug('yes');
             render(req, res, view, cached.content);
         }
@@ -79,6 +77,7 @@ function forumRoute(view, req, res) {
     const originBase = req.app.get('originBase');
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
+    originUrl.searchParams.delete('nocache');
     originUrl = originUrl.toString();
     let url = originUrl;
 
