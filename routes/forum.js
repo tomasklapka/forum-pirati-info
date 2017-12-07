@@ -27,20 +27,29 @@ function render(req, res, view, data) {
 }
 
 function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached) {
+    const scrapingQueue = req.app.get('scrapingQueue');
     ForumScrapper
         .scrap(url, req.app.get('base'), req.app.get('originBase'))
         .then((data) => {
-            // cache post url if post url
+
             if (isPostUrl) {
                 cache.setPostUrl(originUrl, data.url).catch((err) => {
                     debug(err);
                 });
             }
-            // save scrapped json if cacheable
-            cache.save(data).catch((err) => {
-                debug(err);
-            });
-            // return scrapped json
+
+            // queue links for crawling
+            debug('data.links.length: "%d"',  data.links.length);
+            if (data.links && data.links.length > 0) {
+                data.links.forEach((link) => {
+                    if (link.url.indexOf(req.app.get('base')) === 0) { // stay in base
+                        scrapingQueue.queue(link.url, null, link.type)
+                    }
+                });
+            }
+            delete data.links;
+
+            cache.save(data).catch(debug);
             render(req, res, view, data);
         })
         .catch((err) => {
@@ -54,7 +63,9 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
         });
 }
 
-function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
+function getDataAndRender(url, view, req, res, isPostUrl, originUrl) {
+
+    const cache = req.app.get('jsonCache');
 
     cache.load(url).then((cached) => {
         debug('valid json in cache?');
@@ -73,7 +84,6 @@ function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
 
 function forumRoute(view, req, res) {
     debug('View: %s', view);
-    const cache = req.app.get('jsonCache');
     const originBase = req.app.get('originBase');
     let originUrl = new URL(originBase + req.originalUrl);
     originUrl.searchParams.delete('json');
@@ -87,10 +97,10 @@ function forumRoute(view, req, res) {
                 url = postUrl;
                 debug('new Url: %s', url);
             }
-            getDataAndRender(url, view, req, res, cache, true, originUrl);
+            getDataAndRender(url, view, req, res, true, originUrl);
         });
     } else {
-        getDataAndRender(url, view, req, res, cache);
+        getDataAndRender(url, view, req, res);
     }
 }
 

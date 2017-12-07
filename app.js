@@ -6,22 +6,31 @@ const express = require('express'),
     favicon = require('serve-favicon'),
     logger = require('morgan'),
     bodyParser = require('body-parser');
+const { Client } = require('pg');
 
 const ForumScrapper = require('./lib/forum_scrapper');
+const DatabaseInit = require('./lib/db');
 const JsonCache = require('./lib/json_cache');
-
-const app = express();
+const ScrapingQueue = require('./lib/scraping_queue');
 
 const config = require('./config.json');
 
 //config.jsonCacheTtl = 0;
 //config.jsonCacheLastPageTtl = 0;
 
-const jsonCache = new JsonCache(config.jsonCache, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
+const pgClient = new Client({
+    connectionString: config.jsonCache,
+});
 
+const db = new DatabaseInit(pgClient);
+const jsonCache = new JsonCache(pgClient, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
+const scrapingQueue = new ScrapingQueue(pgClient);
+
+const app = express();
 app.set('base', config.base);
 app.set('originBase', config.originBase);
 app.set('jsonCache', jsonCache);
+app.set('scrapingQueue', scrapingQueue);
 app.set('port', config.port || process.env.PORT || 3042);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
@@ -64,7 +73,6 @@ app.get(/^\/images\//, forum.file);
 //app.get(/^\/newposts(-(\d+))?\.html$/, forum.newPosts);
 //app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?$/, forum.forum);
 
-
 function listen() {
     app.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
@@ -84,13 +92,21 @@ function login() {
         });
 }
 
-jsonCache.init().then(() => {
-    login();
-}).catch((err) => {
+function errHandler (err) {
     console.log('Could not init cache ' + config.jsonCache + '.');
     console.log(err);
     login();
-});
+}
+
+db.init().then(() => {
+    scrapingQueue.init().then(() => {
+        scrapingQueue.start();
+        jsonCache.init().then(() => {
+            scrapingQueue.stats();
+            login();
+        }).catch(errHandler);
+    }).catch(errHandler);
+}).catch(errHandler);
 
 
 
