@@ -1,6 +1,8 @@
 {
   "base": "https://forum.pirati.info",
   "originBase": "https://forum.pirati.cz",
+  "jsonCache": "postgresql://forumpiraticzdb/forumpiraticz",
+  "jsonCacheTtl": 864000,
   "username": "<PHPBBUSER>",
   "password": "<PHPBBPASS>"
 }

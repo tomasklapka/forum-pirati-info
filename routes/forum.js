@@ -26,34 +26,44 @@ function render(req, res, view, data) {
     res.render(view, data);
 }
 
+function scrap(url, view, req, res, cache, isPostUrl, originUrl, cached) {
+    ForumScrapper
+        .scrap(url, req.app.get('base'), req.app.get('originBase'))
+        .then((data) => {
+            // cache post url if post url
+            if (isPostUrl) {
+                cache.setPostUrl(originUrl, data.url).catch((err) => {
+                    debug(err);
+                });
+            }
+            // save scrapped json if cacheable
+            cache.save(data).catch((err) => {
+                debug(err);
+            });
+            // return scrapped json
+            render(req, res, view, data);
+        })
+        .catch((err) => {
+            if (cached !== null) {
+                debug('using cached content, because scrapper error: "%o"', err);
+                render(req, res, view, cached.content);
+            } else {
+                renderError(res, err);
+            }
+
+        });
+}
+
 function getDataAndRender(url, view, req, res, cache, isPostUrl, originUrl) {
 
     // load json from cache
     cache.load(url).then((cached) => {
         // json in cache?
-        debug('json in cache?');
-        if (cached === null) {
+        debug('valid json in cache?');
+        if (cached === null || cached.invalid) {
             // no... proceed with scrapping
             debug('no... scrapping...');
-            ForumScrapper
-                .scrap(url, req.app.get('base'), req.app.get('originBase'))
-                .then((data) => {
-                    // cache post url if post url
-                    if (isPostUrl) {
-                        cache.setPostUrl(originUrl, data.url).catch((err) => {
-                            debug(err);
-                        });
-                    }
-                    // save scrapped json if cacheable
-                    cache.save(data).catch((err) => {
-                        debug(err);
-                    });
-                    // return scrapped json
-                    render(req, res, view, data);
-                })
-                .catch((err) => {
-                    renderError(res, err);
-                });
+            scrap(url, view, req, res, cache, isPostUrl, originUrl, cached)
         } else {
             // yes... return json from cache
             debug('yes');

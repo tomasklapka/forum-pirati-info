@@ -13,7 +13,7 @@ const JsonCache = require('./lib/json_cache');
 const app = express();
 
 const config = require('./config.json');
-const jsonCache = new JsonCache(config.jsonCache);
+const jsonCache = new JsonCache(config.jsonCache, config.jsonCacheTtl);
 
 app.set('base', config.base);
 app.set('originBase', config.originBase);
