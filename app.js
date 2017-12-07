@@ -18,18 +18,21 @@ const config = require('./config.json');
 //config.jsonCacheTtl = 0;
 //config.jsonCacheLastPageTtl = 0;
 
+const app = express();
 const pgClient = new Client({
     connectionString: config.jsonCache,
 });
 
 const db = new DatabaseInit(pgClient);
 const jsonCache = new JsonCache(pgClient, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
-const scrapingQueue = new ScrapingQueue(pgClient);
 
-const app = express();
 app.set('base', config.base);
 app.set('originBase', config.originBase);
 app.set('jsonCache', jsonCache);
+app.set('chargeUrls', 3);
+
+const scrapingQueue = new ScrapingQueue(pgClient, app);
+
 app.set('scrapingQueue', scrapingQueue);
 app.set('port', config.port || process.env.PORT || 3042);
 app.set('views', __dirname + '/views');
@@ -73,7 +76,21 @@ app.get(/^\/images\//, forum.file);
 //app.get(/^\/newposts(-(\d+))?\.html$/, forum.newPosts);
 //app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?$/, forum.forum);
 
+function scrapTick() {
+    scrapingQueue.scrapTick();
+}
+
+function stats() {
+    scrapingQueue.stats();
+}
+
 function listen() {
+    stats();
+    if (config.scrapInterval !== 0) {
+        setInterval(scrapTick, config.scrapInterval);
+        scrapTick();
+    }
+    setInterval(stats, 30000);
     app.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
     });
@@ -99,15 +116,9 @@ function errHandler (err) {
 }
 
 db.init().then(() => {
-    scrapingQueue.init().then(() => {
-        scrapingQueue.start();
-        jsonCache.init().then(() => {
-            scrapingQueue.stats();
+    jsonCache.init().then(() => {
+        scrapingQueue.init().then(() => {
             login();
         }).catch(errHandler);
     }).catch(errHandler);
 }).catch(errHandler);
-
-
-
-

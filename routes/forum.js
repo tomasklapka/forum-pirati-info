@@ -37,16 +37,9 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
                     debug(err);
                 });
             }
-
             // queue links for crawling
             debug('data.links.length: "%d"',  data.links.length);
-            if (data.links && data.links.length > 0) {
-                data.links.forEach((link) => {
-                    if (link.url.indexOf(req.app.get('base')) === 0) { // stay in base
-                        scrapingQueue.queue(link.url, null, link.type)
-                    }
-                });
-            }
+            scrapingQueue.queueLinks(data.links);
             delete data.links;
 
             cache.save(data).catch(debug);
