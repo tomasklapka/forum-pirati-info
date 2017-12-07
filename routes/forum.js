@@ -85,7 +85,7 @@ function forumRoute(view, req, res) {
     let url = originUrl;
 
     if (/\/post\d+\.html/.exec(originUrl)) {
-        req.app.get('jsonCcache').getPostUrl(originUrl).then((postUrl) => {
+        req.app.get('jsonCache').getPostUrl(originUrl).then((postUrl) => {
             if (postUrl) {
                 url = postUrl;
                 debug('new Url: %s', url);
