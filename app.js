@@ -9,7 +9,7 @@ const express = require('express'),
 const { Client } = require('pg');
 
 const ForumScrapper = require('./lib/forum_scrapper');
-const DatabaseInit = require('./lib/db');
+const Db = require('./lib/db');
 const JsonCache = require('./lib/json_cache');
 const ScrapingQueue = require('./lib/scraping_queue');
 
@@ -18,21 +18,18 @@ const config = require('./config.json');
 //config.jsonCacheTtl = 0;
 //config.jsonCacheLastPageTtl = 0;
 
-const app = express();
 const pgClient = new Client({
     connectionString: config.jsonCache,
 });
 
-const db = new DatabaseInit(pgClient);
-const jsonCache = new JsonCache(pgClient, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
-
+const app = express();
 app.set('base', config.base);
 app.set('originBase', config.originBase);
+const db = new Db(pgClient);
+app.set('db', db);
+const jsonCache = new JsonCache(pgClient, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
 app.set('jsonCache', jsonCache);
-app.set('chargeUrls', 3);
-
 const scrapingQueue = new ScrapingQueue(pgClient, app);
-
 app.set('scrapingQueue', scrapingQueue);
 app.set('port', config.port || process.env.PORT || 3042);
 app.set('views', __dirname + '/views');
@@ -66,7 +63,7 @@ app.get(/^\/[\w\d-]+-f(\d+)\/?(page(\d+)\.html)?/, forum.forum);
 app.get(/^\/[\w\d-]+-u(\d+)\/?/, forum.user);
 
 app.get(/^\/memberlist(-(\d+))?\.php/, forum.group);
-app.get(/^\/[\w\d-]+-g(\d+)(-(\d+))?\.html/, forum.group);
+app.get(/^\/([\w\d-]+-g|group)(\d+)(-(\d+))?\.html/, forum.group);
 
 app.get(/^\/download\/file\.php/, forum.file);
 app.get(/^\/resources\//, forum.file);
@@ -84,13 +81,18 @@ function stats() {
     scrapingQueue.stats();
 }
 
+function save_state() {
+    scrapingQueue.save_state()
+}
+
 function listen() {
     stats();
     if (config.scrapInterval !== 0) {
         setInterval(scrapTick, config.scrapInterval);
         scrapTick();
     }
-    setInterval(stats, 30000);
+    setInterval(stats, 5000);
+    setInterval(save_state, 30000);
     app.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
     });
@@ -110,14 +112,17 @@ function login() {
 }
 
 function errHandler (err) {
-    console.log('Could not init cache ' + config.jsonCache + '.');
+    console.log('Could not init db ' + config.jsonCache + '.');
     console.log(err);
     login();
 }
 
 db.init().then(() => {
+    console.log('DB initialized');
     jsonCache.init().then(() => {
+        console.log('json cache initialized');
         scrapingQueue.init().then(() => {
+            console.log('scraping queue initialized');
             login();
         }).catch(errHandler);
     }).catch(errHandler);

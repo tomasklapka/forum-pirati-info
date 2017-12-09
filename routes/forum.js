@@ -39,7 +39,7 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
             }
             // queue links for crawling
             debug('data.links.length: "%d"',  data.links.length);
-            scrapingQueue.queueLinks(data.links);
+            scrapingQueue.discoverIdsFromLinks(data.links);
             delete data.links;
 
             cache.save(data).catch(debug);
