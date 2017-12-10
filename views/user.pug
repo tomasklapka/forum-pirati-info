@@ -29,7 +29,8 @@ block content
             td.column1
                 | výchozí skupina:
             td.column2
-                a(href=user.defaultGroup.url) #{user.defaultGroup.title}
+                if user.defaultGroup
+                    a(href=user.defaultGroup.url) #{user.defaultGroup.title}
         tr
             td.column1
                 | bydliště:
