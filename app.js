@@ -47,6 +47,7 @@ app.use(bodyParser.json());
 app.get('/', forum.forum);
 app.get(/^\/active-topics(-(\d+))?\.html/, forum.forum);
 app.get(/^\/unanswered(-(\d+))?\.html/, forum.forum);
+app.get(/^\/viewforum.php/, forum.forum);
 
 app.get(/^\/viewtopic.php/, forum.topic);
 app.get(/^\/search.php/, forum.topic);
