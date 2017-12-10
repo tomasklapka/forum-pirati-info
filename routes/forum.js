@@ -32,20 +32,19 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
     ForumScrapper
         .scrap(url, req.app.get('base'), req.app.get('originBase'))
         .then((data) => {
-
-            if (isPostUrl) {
-                cache.setPostUrl(originUrl, data.url).catch((err) => {
-                    debug(err);
-                });
+            if (data.statusCode === 200) {
+                // debug('data.links.length: "%d"',  data.links.length);
+                scrapingQueue.discoverIdsFromLinks(data.links);
+                delete data.links;
+                delete data.statusCode;
+                delete data.status;
+                db.save(data).catch(debug);
+                cache.save(data).catch(debug);
+                render(req, res, view, data);
+            } else {
+                debug('scraping error: %d "%s"', data.statusCode, data.status);
+                res.status(data.statusCode).send(data.status);
             }
-            // queue links for crawling
-            debug('data.links.length: "%d"',  data.links.length);
-            scrapingQueue.discoverIdsFromLinks(data.links);
-            delete data.links;
-
-            db.save(data).catch(debug);
-            cache.save(data).catch(debug);
-            render(req, res, view, data);
         })
         .catch((err) => {
             if (cached !== null) {
@@ -54,7 +53,6 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
             } else {
                 renderError(res, err);
             }
-
         });
 }
 
@@ -87,10 +85,11 @@ function forumRoute(view, req, res) {
     let url = originUrl;
 
     if (/\/post\d+\.html/.exec(originUrl)) {
-        req.app.get('jsonCache').getPostUrl(originUrl).then((postUrl) => {
-            if (postUrl) {
-                url = postUrl;
-                debug('new Url: %s', url);
+        const post_phpbbid = ForumScrapper.postIdFromUrl(originUrl);
+        req.app.get('db').post(post_phpbbid).then((post) => {
+            if (post && post.url) {
+                url = post.url;
+                debug('new url: %s', url);
             }
             getDataAndRender(url, view, req, res, true, originUrl);
         });
