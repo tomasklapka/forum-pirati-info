@@ -15,9 +15,6 @@ const ScrapingQueue = require('./lib/scraping_queue');
 
 const config = require('./config.json');
 
-//config.jsonCacheTtl = 0;
-//config.jsonCacheLastPageTtl = 0;
-
 const pgClient = new Client({
     connectionString: config.jsonCache,
 });

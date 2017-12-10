@@ -28,6 +28,7 @@ function render(req, res, view, data) {
 
 function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached) {
     const scrapingQueue = req.app.get('scrapingQueue');
+    const db = req.app.get('db');
     ForumScrapper
         .scrap(url, req.app.get('base'), req.app.get('originBase'))
         .then((data) => {
@@ -42,6 +43,7 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
             scrapingQueue.discoverIdsFromLinks(data.links);
             delete data.links;
 
+            db.save(data).catch(debug);
             cache.save(data).catch(debug);
             render(req, res, view, data);
         })
