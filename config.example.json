@@ -3,8 +3,9 @@
   "originBase": "https://forum.pirati.cz",
   "username": "<PHPBBUSER>",
   "password": "<PHPBBPASS>",
-  "jsonCache": "postgresql://forumpiraticz:forumpiraticz@forumpiraticzdb/forumpiraticz",
-  "jsonCacheTtl": 864000,
-  "jsonCacheLastPageTtl": 300,
-  "scrapInterval": 2000
+  "database": "postgresql://forumpiraticz:forumpiraticz@forumpiraticzdb/forumpiraticz",
+  "cacheTtl": 36000,
+  "scrapInterval": 2000,
+  "statsInterval": 60000,
+  "saveStateInterval": 60000
 }

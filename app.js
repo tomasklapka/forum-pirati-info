@@ -16,7 +16,7 @@ const ScrapingQueue = require('./lib/scraping_queue');
 const config = require('./config.json');
 
 const pgClient = new Client({
-    connectionString: config.jsonCache,
+    connectionString: config.database,
 });
 
 const app = express();
@@ -24,7 +24,7 @@ app.set('base', config.base);
 app.set('originBase', config.originBase);
 const db = new Db(pgClient);
 app.set('db', db);
-const jsonCache = new JsonCache(pgClient, config.jsonCacheTtl, config.jsonCacheLastPageTtl);
+const jsonCache = new JsonCache(pgClient, config.cacheTtl);
 app.set('jsonCache', jsonCache);
 const scrapingQueue = new ScrapingQueue(pgClient, app);
 app.set('scrapingQueue', scrapingQueue);
@@ -66,10 +66,6 @@ app.get(/^\/download\/file\.php/, forum.file);
 app.get(/^\/resources\//, forum.file);
 app.get(/^\/images\//, forum.file);
 
-//app.get(/^\/unreadposts(-(\d+))?\.html$/, forum.unreadPosts);
-//app.get(/^\/newposts(-(\d+))?\.html$/, forum.newPosts);
-//app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?$/, forum.forum);
-
 function scrapTick() {
     scrapingQueue.scrapTick();
 }
@@ -85,11 +81,11 @@ function save_state() {
 function listen() {
     stats();
     if (config.scrapInterval !== 0) {
-        setInterval(scrapTick, config.scrapInterval);
+        setInterval(scrapTick, config.scrapInterval || 2000);
         scrapTick();
     }
-    setInterval(stats, 5000);
-    setInterval(save_state, 30000);
+    setInterval(stats, config.statsInterval || 60000);
+    setInterval(save_state, config.saveStateInterval || 60000);
     app.listen(app.get('port'), function () {
         console.log("Express server listening on port " + app.get('port'));
     });
@@ -109,7 +105,7 @@ function login() {
 }
 
 function errHandler (err) {
-    console.log('Could not init db ' + config.jsonCache + '.');
+    console.log('Could not init db ' + config.database + '.');
     console.log(err);
     login();
 }
