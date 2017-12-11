@@ -71,8 +71,9 @@ app.get(/^\/resources\//, forum.file);
 app.get(/^\/images\//, forum.file);
 
 function scrap_tick() {
-    scrapingQueue.scrapTick();
-    setTimeout(scrap_tick, scrapingQueue.scrapInterval);
+    scrapingQueue.scrapTick(() => {
+        setTimeout(scrap_tick, scrapingQueue.scrapInterval);
+    });
 }
 
 function stats() {
