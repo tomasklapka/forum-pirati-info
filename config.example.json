@@ -7,8 +7,8 @@
   "cacheTtl": 36000,
   "requestTimeout": 500,
   "mirror" : true,
-  "maxScrapInterval": 10000,
-  "scrapInterval": 2000,
-  "statsInterval": 60000,
-  "saveStateInterval": 60000
+  "maxScrapInterval": 5000,
+  "scrapInterval": 10,
+  "statsInterval": 10000,
+  "saveStateInterval": 10000
 }
