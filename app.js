@@ -14,6 +14,7 @@ const JsonCache = require('./lib/json_cache');
 const ScrapingQueue = require('./lib/scraping_queue');
 
 const config = require('./config.json');
+config.mirror = config.mirror === false || config.mirror === true ? config.mirror : true;
 
 const pgClient = new Client({
     connectionString: config.database,
@@ -67,7 +68,7 @@ app.get(/^\/download\/file\.php/, forum.file);
 app.get(/^\/resources\//, forum.file);
 app.get(/^\/images\//, forum.file);
 
-function scrapTick() {
+function scrap_tick() {
     scrapingQueue.scrapTick();
 }
 
@@ -82,14 +83,19 @@ function save_state() {
 function listen() {
     stats();
     if (config.scrapInterval !== 0) {
-        setInterval(scrapTick, config.scrapInterval || 2000);
-        scrapTick();
+        setInterval(scrap_tick, config.scrapInterval || 2000);
     }
-    setInterval(stats, config.statsInterval || 60000);
-    setInterval(save_state, config.saveStateInterval || 60000);
-    app.listen(app.get('port'), function () {
-        console.log("Express server listening on port " + app.get('port'));
-    });
+    if (config.statsInterval !== 0) {
+        setInterval(stats, config.statsInterval || 60000);
+    }
+    if (config.saveStateInterval !== 0) {
+        setInterval(save_state, config.saveStateInterval || 60000);
+    }
+    if (config.mirror) {
+        app.listen(app.get('port'), function () {
+            console.log("Express server listening on port " + app.get('port'));
+        });
+    }
 }
 
 function login() {
