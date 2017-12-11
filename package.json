@@ -17,8 +17,6 @@
     "pg": "^7.4.0",
     "pug": "^2.0.0-rc.2",
     "request": "^2.83.0",
-    "request-extensible": "^0.1.1",
-    "request-http-cache": "^1.0.1",
     "serve-favicon": "^2.4.3"
   }
 }

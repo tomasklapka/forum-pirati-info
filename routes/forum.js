@@ -51,15 +51,13 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
                 render(req, res, view, cached.content);
             } else {
                 debug('no cached content');
-                if (err.code === 'ECONNREFUSED') {
-                    renderError(res, err, 502);
-                    return;
+                let status = 500;
+                switch (err.code) {
+                    case 'ECONNRESET':
+                    case 'ECONNREFUSED': status = 502; break;
+                    case 'ESOCKETTIMEDOUT': status = 504; break;
                 }
-                if (err.code === 'ESOCKETTIMEDOUT') {
-                    renderError(res, err, 504);
-                    return
-                }
-                renderError(res, err);
+                renderError(res, err, status);
             }
         });
 }

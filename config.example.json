@@ -5,7 +5,9 @@
   "password": "<PHPBBPASS>",
   "database": "postgresql://forumpiraticz:forumpiraticz@forumpiraticzdb/forumpiraticz",
   "cacheTtl": 36000,
+  "requestTimeout": 500,
   "mirror" : true,
+  "maxScrapInterval": 10000,
   "scrapInterval": 2000,
   "statsInterval": 60000,
   "saveStateInterval": 60000

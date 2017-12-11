@@ -21,6 +21,8 @@ const pgClient = new Client({
 });
 
 const app = express();
+app.set('config', config);
+ForumScrapper.requestTimeout = config.requestTimeout || ForumScrapper.requestTimeout;
 app.set('base', config.base);
 app.set('originBase', config.originBase);
 const db = new Db(pgClient);
@@ -70,6 +72,7 @@ app.get(/^\/images\//, forum.file);
 
 function scrap_tick() {
     scrapingQueue.scrapTick();
+    setTimeout(scrap_tick, scrapingQueue.scrapInterval);
 }
 
 function stats() {
@@ -86,7 +89,7 @@ function listen() {
         setInterval(stats, config.statsInterval || 60000);
     }
     if (config.scrapInterval !== 0) {
-        setInterval(scrap_tick, config.scrapInterval || 2000);
+        scrap_tick();
         if (config.saveStateInterval !== 0) {
             setInterval(save_state, config.saveStateInterval || 60000);
         }
