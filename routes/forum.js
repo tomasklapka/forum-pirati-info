@@ -90,7 +90,7 @@ function forumRoute(view, req, res) {
     originUrl = originUrl.toString();
     let url = originUrl;
 
-    debug('GET %s', url);
+    debug('GET %s %o %o %o', url, req.ip, req.ips, req.headers);
 
     if (/\/post\d+\.html/.exec(originUrl)) {
         const post_phpbbid = ForumScrapper.postIdFromUrl(originUrl);
