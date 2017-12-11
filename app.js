@@ -82,14 +82,14 @@ function save_state() {
 
 function listen() {
     stats();
-    if (config.scrapInterval !== 0) {
-        setInterval(scrap_tick, config.scrapInterval || 2000);
-    }
     if (config.statsInterval !== 0) {
         setInterval(stats, config.statsInterval || 60000);
     }
-    if (config.saveStateInterval !== 0) {
-        setInterval(save_state, config.saveStateInterval || 60000);
+    if (config.scrapInterval !== 0) {
+        setInterval(scrap_tick, config.scrapInterval || 2000);
+        if (config.saveStateInterval !== 0) {
+            setInterval(save_state, config.saveStateInterval || 60000);
+        }
     }
     if (config.mirror) {
         app.listen(app.get('port'), function () {
