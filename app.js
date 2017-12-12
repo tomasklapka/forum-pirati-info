@@ -15,7 +15,7 @@ const ScrapingQueue = require('./lib/scraping_queue');
 
 const config = require('./config.json');
 config.mirror = config.mirror === false || config.mirror === true ? config.mirror : true;
-
+config.morgan = config.morgan || 'dev';
 const pgClient = new Client({
     connectionString: config.database,
 });
@@ -42,7 +42,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use(favicon(join(__dirname, 'public/favicon.ico')));
-app.use(logger('dev'));
+app.use(logger(config.morgan));
 app.set('json spaces', 2);
 app.use(express.static(join(__dirname, 'public')));
 app.use(bodyParser.json());
