@@ -66,9 +66,9 @@ app.get(/^\/[\w\d-]+-u(\d+)\/?/, forum.user);
 app.get(/^\/memberlist(-(\d+))?\.php/, forum.group);
 app.get(/^\/([\w\d-]+-g|group)(\d+)(-(\d+))?\.html/, forum.group);
 
-app.get(/^\/download\/file\.php/, forum.file);
-app.get(/^\/resources\//, forum.file);
-app.get(/^\/images\//, forum.file);
+app.get(/^\/download\/file\.php/, forum.pipe);
+app.get(/^\/resources\//, forum.pipe);
+app.get(/^\/images\//, forum.pipe);
 
 function scrap_tick() {
     scrapingQueue.scrapTick(() => {
