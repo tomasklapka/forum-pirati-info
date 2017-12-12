@@ -36,10 +36,10 @@ function scrapAndRender(url, view, req, res, cached) {
                 delete data.links;
                 delete data.statusCode;
                 delete data.status;
-                // debug('saving: %d %s', data.phpbbid, data.url);
 
                 if (data.typeid > 0) {
                     const db = req.app.get('db');
+                    // debug('saving: %d %s', data.phpbbid, data.url);
                     db.save(data).catch(debug);
                     const cache = req.app.get('jsonCache');
                     cache.save(data).catch(debug);
