@@ -12,7 +12,7 @@ if poll
                                 | #{option.votes}
                         td.polloption
                             if !poll.resultsUrl
-                                span.polloption(style='width: ' + option.percents_voters + '%;')
+                                span.polloption(style='width: ' + option.percentsVoters + '%;')
                                     | &nbsp;
                         td.stat2
                             if !poll.resultsUrl
@@ -22,4 +22,4 @@ if poll
                     | Hlasování probíhá.&nbsp;
                     a(href=poll.resultsUrl) Zobraz výsledky
                 else
-                    | #{poll.n_votes} hlasů. #{poll.n_voters} hlasujících
+                    | #{poll.nVotes} hlasů. #{poll.nVoters} hlasujících
