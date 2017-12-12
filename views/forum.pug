@@ -11,7 +11,7 @@ block content
                     a(href=section.url) #{section.title}
                 +section(section.forums, forums, ['FÓRUM', 'TÉMATA', 'PŘÍSPĚVKY', 'POSLEDNÍ PŘÍSPĚVEK'], 'forum')
                 +section(section.announcements, announcements, ['OZNÁMENÍ', 'ODPOVĚDI', 'ZOBRAZENÍ', 'POSLEDNÍ PŘÍSPĚVEK'])
-                +section(section.threads, threads, ['TÉMATA', 'ODPOVĚDI', 'ZOBRAZENÍ', 'POSLEDNÍ PŘÍSPĚVEK'])
+                +section(section.topics, topics, ['TÉMATA', 'ODPOVĚDI', 'ZOBRAZENÍ', 'POSLEDNÍ PŘÍSPĚVEK'])
 
 mixin section(list, elements, headers, type)
     if list.length > 0
