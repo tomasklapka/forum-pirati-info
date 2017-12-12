@@ -25,9 +25,8 @@ function render(req, res, view, data) {
     res.render(view, data);
 }
 
-function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached) {
+function scrapAndRender(url, view, req, res, cached) {
     const scrapingQueue = req.app.get('scrapingQueue');
-    const db = req.app.get('db');
     ForumScrapper
         .scrap(url, req.app.get('base'), req.app.get('originBase'))
         .then((data) => {
@@ -37,7 +36,10 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
                 delete data.links;
                 delete data.statusCode;
                 delete data.status;
+                // debug('saving: %d %s', data.phpbbid, data.url);
+                const db = req.app.get('db');
                 db.save(data).catch(debug);
+                const cache = req.app.get('cache');
                 cache.save(data).catch(debug);
                 render(req, res, view, data);
             } else {
@@ -62,7 +64,7 @@ function scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached
         });
 }
 
-function getDataAndRender(url, view, req, res, isPostUrl, originUrl) {
+function getDataAndRender(url, view, req, res) {
 
     const cache = req.app.get('jsonCache');
 
@@ -72,7 +74,7 @@ function getDataAndRender(url, view, req, res, isPostUrl, originUrl) {
         // if (nocacheRequest) { debug('nocache request - invalidating'); }
         if (cached === null || cached.invalid || nocacheRequest) {
             //debug('no... scrapping...');
-            scrapAndRender(url, view, req, res, cache, isPostUrl, originUrl, cached)
+            scrapAndRender(url, view, req, res, cached)
         } else {
             // debug('yes');
             render(req, res, view, cached.content);
@@ -90,7 +92,7 @@ function forumRoute(view, req, res) {
     originUrl = originUrl.toString();
     let url = originUrl;
 
-    debug('GET %s %o %o %o', url, req.ip, req.ips, req.headers);
+    debug('GET %s', url);
 
     if (/\/post\d+\.html/.exec(originUrl)) {
         const post_phpbbid = ForumScrapper.postIdFromUrl(originUrl);
@@ -99,8 +101,11 @@ function forumRoute(view, req, res) {
                 url = originBase + post.url;
                 debug('new url: %s', url);
             }
-            getDataAndRender(url, view, req, res, true, originUrl);
-        });
+            getDataAndRender(url, view, req, res);
+        }).catch((err) => {
+            debug(err);
+            getDataAndRender(url, view, req, res);
+        } );
     } else {
         getDataAndRender(url, view, req, res);
     }
