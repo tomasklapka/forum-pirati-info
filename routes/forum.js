@@ -6,8 +6,8 @@ const { URL } = require('url');
 const ForumScrapper = require('../lib/forum_scrapper');
 
 function renderError(res, err, status = 500) {
-    debug('%d backend error "%s"', status, err.code);
-    res.status(status).send(status + ' backend error ('+err.code+')');
+    debug('%d backend error "%o"', status, (err.code||err));
+    res.status(status).send(status + ' backend error ('+(err.code||err)+')');
 }
 
 function render(req, res, view, data) {
@@ -37,11 +37,18 @@ function scrapAndRender(url, view, req, res, cached) {
                 delete data.statusCode;
                 delete data.status;
                 // debug('saving: %d %s', data.phpbbid, data.url);
-                const db = req.app.get('db');
-                db.save(data).catch(debug);
-                const cache = req.app.get('cache');
-                cache.save(data).catch(debug);
-                render(req, res, view, data);
+
+                if (data.typeid > 0) {
+                    const db = req.app.get('db');
+                    db.save(data).catch(debug);
+                    const cache = req.app.get('jsonCache');
+                    cache.save(data).catch(debug);
+                    render(req, res, view, data);
+                } else {
+                    debug('internal error');
+                    debug(data);
+                    res.status(500).send('internal server error');
+                }
             } else {
                 debug('scraping error: %d "%s"', data.statusCode, data.status);
                 res.status(data.statusCode).send(data.status);
