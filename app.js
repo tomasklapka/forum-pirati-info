@@ -16,6 +16,7 @@ const ScrapingQueue = require('./lib/scraping_queue');
 const config = require('./config.json');
 config.mirror = config.mirror === false || config.mirror === true ? config.mirror : true;
 config.morgan = config.morgan || 'dev';
+config.dataDir = config.dataDir || __dirname + '/data';
 const pgClient = new Client({
     connectionString: config.database,
 });
