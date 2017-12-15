@@ -45,8 +45,8 @@ block content
                                 if n_likes !== i
                                     | #{', '}
                     div.postColumn.postProfile
-                        if post.avatarSrc
-                            img(src=post.avatarSrc width=90 height=90 alt='avatar uživatele ' + post.username)
+                        if post.avatar
+                            img(src=post.avatar width=90 height=90 alt='avatar uživatele ' + post.username)
                             br
                             br
                         a(href=post.user style=post.userColor ? 'color: ' + post.userColor + ';' : '')
