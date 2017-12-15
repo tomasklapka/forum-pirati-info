@@ -1,75 +1,63 @@
 "use strict";
 
-const express = require('express'),
-    forum = require('./routes/forum'),
-    join = require('path').join,
-    favicon = require('serve-favicon'),
-    logger = require('morgan'),
-    bodyParser = require('body-parser');
-const { Client } = require('pg');
+const morgan = require('morgan');
 
-const ForumScrapper = require('./lib/forum_scrapper');
 const Db = require('./lib/db');
-const JsonCache = require('./lib/json_cache');
+const ScrapingCache = require('./lib/scraping_cache');
+const Scrapper = require('./lib/scrapper');
+const Mirror = require('./lib/mirror');
 const ScrapingQueue = require('./lib/scraping_queue');
 
 const config = require('./config.json');
-config.mirror = config.mirror === false || config.mirror === true ? config.mirror : true;
-config.morgan = config.morgan || 'dev';
-config.dataDir = config.dataDir || __dirname + '/data';
-const pgClient = new Client({
-    connectionString: config.database,
+config.mirror = (config.mirror === false || config.mirror === true) ? config.mirror : true;
+
+const db = new Db(config.database);
+
+const scrapingCache = new ScrapingCache({
+    db: db,
+    ttl: config.cacheTtl,
+});
+const scrapper = new Scrapper({
+    db: db,
+    cache: scrapingCache,
+    base: config.base,
+    baseOrigin: config.baseOrigin,
+    requestTimeout: config.requestTimeout,
+    dataDir: config.dataDir,
+    username: config.username,
+    password: config.password
+});
+const mirror = new Mirror({
+    scrapper: scrapper,
+    logger: morgan(config.morgan),
+    baseOrigin: config.baseOrigin,
+    port: config.mirrorPort,
+});
+/*
+const scrapingQueue = new ScrapingQueue({
+    db: db,
+    scrapper: scrapper,
+    baseOrigin: config.baseOrigin,
+    scrapInterval: config.scrapInterval,
+    maxScrapInterval: config.maxScrapInterval,
+    saveStateInterval: config.saveStateInterval,
+});
+*/
+
+Promise.all([
+    db.init(),
+    scrapingCache.init(),
+//    scrapingQueue.init(),
+]).then(() => {
+    if (config.mirror) {
+        mirror.listen();
+    }
+}).catch((err) => {
+    console.log('init error: "%o"', err);
 });
 
-const app = express();
-app.set('config', config);
-ForumScrapper.requestTimeout = config.requestTimeout || ForumScrapper.requestTimeout;
-app.set('base', config.base);
-app.set('originBase', config.originBase);
-const db = new Db(pgClient);
-app.set('db', db);
-const jsonCache = new JsonCache(pgClient, config.cacheTtl);
-app.set('jsonCache', jsonCache);
-const scrapingQueue = new ScrapingQueue(pgClient, app);
-app.set('scrapingQueue', scrapingQueue);
-app.set('port', config.port || process.env.PORT || 3042);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'pug');
 
-app.enable('trust proxy');
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-app.use(favicon(join(__dirname, 'public/favicon.ico')));
-app.use(logger(config.morgan));
-app.set('json spaces', 2);
-app.use(express.static(join(__dirname, 'public')));
-app.use(bodyParser.json());
-
-app.get('/', forum.forum);
-app.get(/^\/active-topics(-(\d+))?\.html/, forum.forum);
-app.get(/^\/unanswered(-(\d+))?\.html/, forum.forum);
-app.get(/^\/viewforum.php/, forum.forum);
-
-app.get(/^\/viewtopic.php/, forum.topic);
-app.get(/^\/search.php/, forum.topic);
-app.get(/^\/.*(topic|post)(\d+)(-\d+)?\.html/, forum.topic);
-app.get(/^\/[\w\d-]+-u(\d+)\/posts\/?(page(\d+)\.html)?/, forum.topic);
-app.get(/^\/([\w\d-]+-f(\d+)|announces)\/[\w\d-]+-t(\d+)(-(\d+))?\.html/, forum.topic);
-
-app.get(/^\/[\w\d-]+-u(\d+)\/topics\/?(page(\d+)\.html)?/, forum.forum);
-app.get(/^\/[\w\d-]+-f(\d+)\/?(page(\d+)\.html)?/, forum.forum);
-
-app.get(/^\/[\w\d-]+-u(\d+)\/?/, forum.user);
-
-app.get(/^\/memberlist(-(\d+))?\.php/, forum.group);
-app.get(/^\/([\w\d-]+-g|group)(\d+)(-(\d+))?\.html/, forum.group);
-
-app.get(/^\/download\/file\.php/, forum.pipe);
-app.get(/^\/resources\/[a-z0-9_-]+\/(thumb\/)?([0-9]+)$/, forum.pipe);
-
+/*
 function scrap_tick() {
     scrapingQueue.scrapTick(() => {
         setTimeout(scrap_tick, scrapingQueue.scrapInterval);
@@ -83,7 +71,9 @@ function stats() {
 function save_state() {
     scrapingQueue.save_state()
 }
+*/
 
+/*
 function listen() {
     stats();
     if (config.statsInterval !== 0) {
@@ -96,38 +86,9 @@ function listen() {
         }
     }
     if (config.mirror) {
-        app.listen(app.get('port'), function () {
-            console.log("Express server listening on port " + app.get('port'));
-        });
+        mirror.listen();
     }
 }
 
-function login() {
-    ForumScrapper
-        .login(config.originBase+'/ucp.php?mode=login', config.username, config.password)
-        .then(() => {
-            listen();
-        })
-        .catch((err) => {
-            console.log('Could not login as ' + config.username + '.');
-            console.log(err);
-            listen();
-        });
-}
 
-function errHandler (err) {
-    console.log('Could not init db ' + config.database + '.');
-    console.log(err);
-    login();
-}
-
-db.init().then(() => {
-    console.log('DB initialized');
-    jsonCache.init().then(() => {
-        console.log('json cache initialized');
-        scrapingQueue.init().then(() => {
-            console.log('scraping queue initialized');
-            login();
-        }).catch(errHandler);
-    }).catch(errHandler);
-}).catch(errHandler);
+*/

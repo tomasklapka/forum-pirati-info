@@ -1,11 +1,11 @@
 table.navi
     tr
         td.path
-            a(href=base) Fórum
-            if navi.parent && navi.parent !== base+'/'
+            a(href=meta.base) Fórum
+            if navi.parent && navi.parent !== meta.base+'/'
                 | &nbsp;&gt;&nbsp;
                 a(href=navi.parent) #{navi.parentTitle}
-            if navi.forum && navi.forum !== base+'/'
+            if navi.forum && navi.forum !== meta.base+'/'
                 | &nbsp;&gt;&nbsp;
                 a(href=navi.forum) #{navi.forumTitle}
             br

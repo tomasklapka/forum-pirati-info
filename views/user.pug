@@ -7,7 +7,7 @@ block content
             td.column1
                 | uživatelské jméno:
             td.column2
-                span(style=user.color?'color: '+user.color+';':'')
+                span(style=user.color ? 'color: '+user.color+';' : '')
                     strong
                         | #{user.username}
                 | &nbsp;(
@@ -19,7 +19,7 @@ block content
             td.column1
                 | avatar:
             td.column2
-                img(src=user.avatarSrc)
+                img(src=user.avatar)
         tr
             td.column1
                 | rank:
@@ -112,7 +112,7 @@ block content
             td.column2
                 - const keys = Object.keys(user.groups)
                 - const last_i = keys[keys.length-1]
-                each group, i in user.groups
-                    a(href=group.url) #{group.title}
-                    if last_i !== i
-                        |#{', '}
+                    each group, i in user.groups
+                        a(href=group.url) #{group.title}
+                        if last_i !== i
+                            |#{', '}
