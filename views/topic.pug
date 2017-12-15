@@ -23,7 +23,7 @@ block content
 
     ul#posts
         each post in posts
-            li(id='p'+post.phpbbid)
+            li(id='p'+post.id)
                 div.post
                     div.postColumn.postBody
                         a(href=post.url) #{post.title}
