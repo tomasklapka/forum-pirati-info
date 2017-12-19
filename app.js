@@ -8,8 +8,11 @@ const Scrapper = require('./lib/scrapper');
 const Mirror = require('./lib/mirror');
 const ScrapingQueue = require('./lib/scraping_queue');
 
-const config = require('./config.json');
+const config = require('./config.json') || {};
 config.mirror = (config.mirror === false || config.mirror === true) ? config.mirror : true;
+config.scrapInterval = config.scrapInterval || 500;
+config.statsInterval = config.statsInterval || 60000;
+config.saveStateInterval = config.saveStateInterval || 60000;
 
 const db = new Db(config.database);
 
@@ -17,6 +20,7 @@ const scrapingCache = new ScrapingCache({
     db: db,
     ttl: config.cacheTtl,
 });
+
 const scrapper = new Scrapper({
     db: db,
     cache: scrapingCache,
@@ -27,13 +31,14 @@ const scrapper = new Scrapper({
     username: config.username,
     password: config.password
 });
+
 const mirror = new Mirror({
     scrapper: scrapper,
     logger: morgan(config.morgan),
     baseOrigin: config.baseOrigin,
     port: config.mirrorPort,
 });
-/*
+
 const scrapingQueue = new ScrapingQueue({
     db: db,
     scrapper: scrapper,
@@ -42,53 +47,47 @@ const scrapingQueue = new ScrapingQueue({
     maxScrapInterval: config.maxScrapInterval,
     saveStateInterval: config.saveStateInterval,
 });
-*/
 
 Promise.all([
     db.init(),
     scrapingCache.init(),
-//    scrapingQueue.init(),
 ]).then(() => {
     if (config.mirror) {
         mirror.listen();
+    }
+    if (config.scrapInterval > 0) {
+        start_scraping_queue();
+    }
+    if (config.statsInterval > 0) {
+        setInterval(show_stats, config.statsInterval);
     }
 }).catch((err) => {
     console.log('init error: "%o"', err);
 });
 
+function start_scraping_queue() {
+    scrapingQueue
+        .init()
+        .then(() => {
+            console.log('Scraping queue started with interval: %d ms', config.scrapInterval);
+            scraping_queue_tick();
+            setInterval(save_scraping_queue_state, config.saveStateInterval);
+        })
+        .catch((err) => {
+            console.log('scraping_queue init error', err);
+        });
+}
 
-/*
-function scrap_tick() {
-    scrapingQueue.scrapTick(() => {
-        setTimeout(scrap_tick, scrapingQueue.scrapInterval);
+function scraping_queue_tick() {
+    scrapingQueue.tick(() => {
+        setTimeout(scraping_queue_tick, scrapingQueue.scrapInterval);
     });
 }
 
-function stats() {
+function save_scraping_queue_state() {
+    scrapingQueue.saveState();
+}
+
+function show_stats() {
     scrapingQueue.stats();
 }
-
-function save_state() {
-    scrapingQueue.save_state()
-}
-*/
-
-/*
-function listen() {
-    stats();
-    if (config.statsInterval !== 0) {
-        setInterval(stats, config.statsInterval || 60000);
-    }
-    if (config.scrapInterval !== 0) {
-        scrap_tick();
-        if (config.saveStateInterval !== 0) {
-            setInterval(save_state, config.saveStateInterval || 60000);
-        }
-    }
-    if (config.mirror) {
-        mirror.listen();
-    }
-}
-
-
-*/
